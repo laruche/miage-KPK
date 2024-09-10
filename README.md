@@ -1,2 +1,3 @@
-# miage-KPK
-Klezev Pad Kael Game on Unity
+# Klezev Pad Kael
+A fantastic game as a Student Project
+
