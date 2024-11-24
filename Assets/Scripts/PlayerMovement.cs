@@ -12,17 +12,33 @@ public class PlayerMovement : MonoBehaviour
     public Rigidbody2D rb;
     public Animator animator;
     public SpriteRenderer spriteRenderer;
-    public Transform groundCheckLeft;
-    public Transform groundCheckRight;
+    public Transform groundCheck;
+    public float groundCheckRadius;
+
+    public float maxX = 10;
+    
+    public LayerMask collisionLayer;
+
+    public Transform attackFrontTransform;
+    public Transform attackBackTransform;
+    public float attackRange;
+    public LayerMask enemyLayer;
+
+    public int attackDamage = 20;
+
+    // public Transform groundCheckRight;
     public bool isJumping;
     public bool isGrounded;
+    public bool isAttacking;
+
     public DeadScreen deadScreen;
 
     private Vector3 velocity = Vector3.zero;
     private float horizontalMovement;
     private bool isDead = false;
     private int jumpCount;
-    private const int maxJumpCount = 2;
+    private const int maxJumpCount = 1;
+
     
     // Start is called before the first frame update
     void Start()
@@ -37,7 +53,8 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        isGrounded = Physics2D.OverlapArea(groundCheckLeft.position, groundCheckRight.position);
+        //isGrounded = Physics2D.OverlapArea(groundCheckLeft.position, groundCheckRight.position);
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, collisionLayer);
         if (isGrounded)
         {
             jumpCount = 0;
@@ -52,12 +69,12 @@ public class PlayerMovement : MonoBehaviour
         {
             isJumping = true;
             jumpCount++;
-            animator.SetTrigger("isJump");
+            animator.SetBool("isJumping", true);
         }
         //on ajoute la touche pour attaquer
         if (Input.GetKeyDown(KeyCode.E))
         {
-            animator.SetTrigger("isAttack");
+            animator.SetBool("isAttacking", true);
         }
         //on ajouter une touche pour tester la mort
         if (Input.GetKeyDown(KeyCode.X))
@@ -78,15 +95,15 @@ public class PlayerMovement : MonoBehaviour
         
         Vector3 screenPosition = transform.position;
         // on log la position de l'objet 
-        Debug.Log(screenPosition.y);
+        // Debug.Log(screenPosition.y);
         if (screenPosition.y < -15)
         {
             Die();
         }
 
-        // if (screenPosition.x > maxX) {
-        //     Die();
-        // }
+        if (screenPosition.x > maxX) {
+            Die();
+        }
     }
 
     void FixedUpdate()
@@ -95,6 +112,12 @@ public class PlayerMovement : MonoBehaviour
         Flip(rb.velocity.x);
         float characterVelocity = Mathf.Abs(rb.velocity.x);
         animator.SetFloat("speed", characterVelocity);
+        if (characterVelocity > 0.1f)
+        {
+            animator.SetBool("isMooving", true);
+        } else {
+            animator.SetBool("isMooving", false);
+        }
     }
 
     void MovePlayer(float _horizontalMovement)
@@ -129,6 +152,42 @@ public class PlayerMovement : MonoBehaviour
         } else if(_velocity < -0.1f)
         {
             spriteRenderer.flipX = true;
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(attackFrontTransform.position, attackRange);
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(attackBackTransform.position, attackRange);
+    }
+
+    public void endAttack()
+    {
+        animator.SetBool("isAttacking", false);
+    }
+
+    public void Attack()
+    {
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackFrontTransform.position, attackRange, enemyLayer);
+        foreach (Collider2D enemy in hitEnemies)
+        {
+            Debug.Log("We hit " + enemy.name);
+            enemy.GetComponent<EnnemyHealth>().TakeDamage(attackDamage);
+        }
+    }
+
+    public void AttackBack() 
+    {
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackBackTransform.position, attackRange, enemyLayer);
+        foreach (Collider2D enemy in hitEnemies)
+        {
+            Debug.Log("We hit " + enemy.name);
         }
     }
 }
