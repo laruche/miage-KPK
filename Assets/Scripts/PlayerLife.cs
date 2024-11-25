@@ -31,10 +31,10 @@ public class PlayerLife : MonoBehaviour
     void Update()
     {
         
-        if(Input.GetKeyDown(KeyCode.H))
-        {
-            TakeDamage(20);
-        }
+        // if(Input.GetKeyDown(KeyCode.H))
+        // {
+        //     TakeDamage(20);
+        // }
 
         if(currentLife <= 0)
         {

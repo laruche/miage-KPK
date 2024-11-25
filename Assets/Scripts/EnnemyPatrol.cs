@@ -14,6 +14,8 @@ public class EnnemyPatrol : MonoBehaviour
 
     public bool isHideSystem = false;
     public bool isHided = false;
+    public float hideTime = 2f;
+    public float unHideTime = 1f;
     
 
     // Start is called before the first frame update
@@ -97,13 +99,13 @@ public class EnnemyPatrol : MonoBehaviour
 
     public IEnumerator HideTimer()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(hideTime);
         Unhide();
     }
 
     public IEnumerator NOTHideAnymore()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(unHideTime);
         NotHide();
     }
     
