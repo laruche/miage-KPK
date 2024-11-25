@@ -301,7 +301,7 @@ GameObject:
   - component: {fileID: 1070709537359640808}
   - component: {fileID: 6963284619960290604}
   m_Layer: 0
-  m_Name: 2DrendererWind
+  m_Name: AnimatedPalette
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
